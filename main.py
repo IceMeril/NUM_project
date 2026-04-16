@@ -7,19 +7,39 @@ Tint = 1
 Text = 20
 
 #discrétisation de l'espace
-N = 3
+N = 9
 dx = L/N
 dy = L/N
 X = np.linspace(0, L, N)
 Y = np.linspace(0, L, N)
 
-#Initialisation de C
+#Initialisation des matrices
 C = np.zeros((N**2,N**2))
 F = np.zeros((N**2))
 
-#Boucle de remplissage
 
+def test_point_intérieur(C, i):
+    bool = False
+    if not((i+1)%N == 0 or (i+1)%N == 1): #le point n'est pas sur les lignes verticales
+        if not((i+1) < N or (i+1) > int(N**2)-N): #le point n'est pas sur les lignes horizontales
+            if not((i+1)%N <= 2*N/3 and (i+1)%N > N/3 and (i+1) > len(C)/3 and (i+1) <= 2*len(C)/3) : # le point n'est pas dans le trou du milieu
+                bool = True
+    return bool
 
+#Boucle de remplissage pour l'équation de chaleur
+compt = 0
+for i in range(len(C)): #on parcoure chaque point de C, ligne par ligne : N**2 points au total avec N points par ligne
+    if test_point_intérieur(C, i) :
+        compt += 1
+        C[i,i] = -2/(1/(dx**2)+1/(dy**2))
+        C[i,i-1] = 1/(dx**2)
+        C[i,i+1] = 1/(dx**2)
+        C[i,i+N] = 1/(dy**2)
+        C[i,i-N] = 1/(dy**2)
+    else :
+        C[i,i] = 1
+print(C[29].reshape(N,N))
+print(f"remplissage de C fait, {compt} points intérieurs trouvés")   
 
 #Conditions aux limites 
 #Sur F
@@ -32,33 +52,15 @@ for i in range(N**2 - N, N**2) :
 
 for i in range(N): #au centre, il y a un trou et la température est différente
     if i < int(2*N/3) and i >= int(N/3) : #on est dans les lignes centrales 
-        print('true ligne')
         for j in range(N) :
             if j%N >= int(N/3) and j%N < int(2*N/3): #colonnes centrales
-                print('true colonne')
                 F[i*N+j] = Tint
 
-
-#Sur C
-for i in range(N) :
-    C[i, i] = 1
-    C[N*i, N*i] = 1
-    C[N*(i + 1) -1, N*(i + 1) -1] = 1
-
-for i in range(N**2 - N, N**2) :
-    C[i, i] = 1
-
-
-print(C)
-
-print(F)
-#C à droite
-
-#C au milieu
-
+print (F.reshape(N,N))
 #Résolution 
-#U = np.linalg.solve(C,F)
-
+U = np.linalg.solve(C,F) #je pourrais faire ça de tête
 
 #Résultats
-
+plt.imshow(U.reshape(N,N), cmap='viridis', interpolation='nearest')
+plt.colorbar()
+plt.show()
