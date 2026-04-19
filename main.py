@@ -3,15 +3,13 @@ import matplotlib.pyplot as plt
 
 #déclaration des variables
 L = 1
-Tint = 1
+Tint = 0
 Text = 20
 
 #discrétisation de l'espace
-N = 9
-dx = L/N
-dy = L/N
-X = np.linspace(0, L, N)
-Y = np.linspace(0, L, N)
+N = 88
+dx = L/(N-1)
+dy = L/(N-1)
 
 #Initialisation des matrices
 C = np.zeros((N**2,N**2))
@@ -31,7 +29,7 @@ compt = 0
 for i in range(len(C)): #on parcoure chaque point de C, ligne par ligne : N**2 points au total avec N points par ligne
     if test_point_intérieur(C, i) :
         compt += 1
-        C[i,i] = -2/(1/(dx**2)+1/(dy**2))
+        C[i,i] = -2/((1/(dx**2))+(1/(dy**2)))
         C[i,i-1] = 1/(dx**2)
         C[i,i+1] = 1/(dx**2)
         C[i,i+N] = 1/(dy**2)
@@ -44,7 +42,7 @@ print(f"remplissage de C fait, {compt} points intérieurs trouvés")
 #Conditions aux limites 
 #Sur F
 for i in range (N):
-    F[i] = Text #la première ligne est à la température de dehors
+    F[i] = Text #la première ligne est à la température extérieure
     F[N*i] = Text #la première colonne
     F[N*(i + 1) -1] = Text 
 for i in range(N**2 - N, N**2) :
@@ -57,6 +55,7 @@ for i in range(N): #au centre, il y a un trou et la température est différente
                 F[i*N+j] = Tint
 
 print (F.reshape(N,N))
+
 #Résolution 
 U = np.linalg.solve(C,F) #je pourrais faire ça de tête
 
