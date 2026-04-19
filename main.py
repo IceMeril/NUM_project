@@ -29,14 +29,14 @@ compt = 0
 for i in range(len(C)): #on parcoure chaque point de C, ligne par ligne : N**2 points au total avec N points par ligne
     if test_point_intérieur(C, i) :
         compt += 1
-        C[i,i] = -2/((1/(dx**2))+(1/(dy**2)))
+        C[i,i] = -2*((1/(dx**2))+(1/(dy**2)))
         C[i,i-1] = 1/(dx**2)
         C[i,i+1] = 1/(dx**2)
         C[i,i+N] = 1/(dy**2)
         C[i,i-N] = 1/(dy**2)
     else :
         C[i,i] = 1
-print(C[29].reshape(N,N))
+print(C[N+2].reshape(N,N))
 print(f"remplissage de C fait, {compt} points intérieurs trouvés")   
 
 #Conditions aux limites 
